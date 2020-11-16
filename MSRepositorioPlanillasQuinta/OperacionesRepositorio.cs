@@ -9,6 +9,7 @@ namespace MSRepositorioPlanillasQuinta
     {
         public OperacionesRepositorio(DBPlanillasContext ctx): base(ctx) 
         { 
+
         }
     }
 }
