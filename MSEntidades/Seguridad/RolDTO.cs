@@ -1,24 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace MSRepositorioPlanillasQuinta.Modelo
+namespace MSEntidades.Seguridad
 {
-    public partial class Estado
+    public class RolDTO
     {
-        public Estado()
-        {
-            Planillacabecera = new HashSet<Planillacabecera>();
-        }
-
-        public long Idestado { get; set; }
-        public string Nombre { get; set; }
+        public long Id { get; set; }
         public string Descripcion { get; set; }
         public string LogUsuariocrea { get; set; }
         public string LogUsuariomodifica { get; set; }
         public DateTime LogFechacrea { get; set; }
         public DateTime LogFechamodifica { get; set; }
         public short LogEstado { get; set; }
-
-        public virtual ICollection<Planillacabecera> Planillacabecera { get; set; }
     }
 }

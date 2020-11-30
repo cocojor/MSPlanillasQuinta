@@ -29,5 +29,8 @@ namespace MSRepositorioPlanillasQuinta.Modelo
         public DateTime LogFechacrea { get; set; }
         public DateTime LogFechamodifica { get; set; }
         public short LogEstado { get; set; }
+
+        public virtual Planillacabecera IdplanillacabeceraNavigation { get; set; }
+        public virtual Trabajador IdtrabajadorNavigation { get; set; }
     }
 }

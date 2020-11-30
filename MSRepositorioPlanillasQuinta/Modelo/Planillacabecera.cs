@@ -5,6 +5,12 @@ namespace MSRepositorioPlanillasQuinta.Modelo
 {
     public partial class Planillacabecera
     {
+        public Planillacabecera()
+        {
+            Contactoexpediente = new HashSet<Contactoexpediente>();
+            Planilladetalle = new HashSet<Planilladetalle>();
+        }
+
         public long Idplanillacabecera { get; set; }
         public long Iddependencia { get; set; }
         public long Idestado { get; set; }
@@ -29,5 +35,10 @@ namespace MSRepositorioPlanillasQuinta.Modelo
         public DateTime LogFechacrea { get; set; }
         public DateTime LogFechamodifica { get; set; }
         public short LogEstado { get; set; }
+
+        public virtual Dependencia IddependenciaNavigation { get; set; }
+        public virtual Estado IdestadoNavigation { get; set; }
+        public virtual ICollection<Contactoexpediente> Contactoexpediente { get; set; }
+        public virtual ICollection<Planilladetalle> Planilladetalle { get; set; }
     }
 }

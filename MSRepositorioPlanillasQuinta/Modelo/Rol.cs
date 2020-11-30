@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace MSRepositorioPlanillasQuinta.Modelo
 {
-    public partial class Estado
+    public partial class Rol
     {
-        public Estado()
+        public Rol()
         {
-            Planillacabecera = new HashSet<Planillacabecera>();
+            Rolpermiso = new HashSet<Rolpermiso>();
+            Usuariorol = new HashSet<Usuariorol>();
         }
 
-        public long Idestado { get; set; }
-        public string Nombre { get; set; }
+        public long Idrol { get; set; }
         public string Descripcion { get; set; }
         public string LogUsuariocrea { get; set; }
         public string LogUsuariomodifica { get; set; }
@@ -19,6 +19,7 @@ namespace MSRepositorioPlanillasQuinta.Modelo
         public DateTime LogFechamodifica { get; set; }
         public short LogEstado { get; set; }
 
-        public virtual ICollection<Planillacabecera> Planillacabecera { get; set; }
+        public virtual ICollection<Rolpermiso> Rolpermiso { get; set; }
+        public virtual ICollection<Usuariorol> Usuariorol { get; set; }
     }
 }

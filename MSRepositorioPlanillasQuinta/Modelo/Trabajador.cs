@@ -5,6 +5,11 @@ namespace MSRepositorioPlanillasQuinta.Modelo
 {
     public partial class Trabajador
     {
+        public Trabajador()
+        {
+            Planilladetalle = new HashSet<Planilladetalle>();
+        }
+
         public long Idtrabajador { get; set; }
         public long Iddependencia { get; set; }
         public long Idgrupo { get; set; }
@@ -18,5 +23,10 @@ namespace MSRepositorioPlanillasQuinta.Modelo
         public DateTime LogFechacrea { get; set; }
         public DateTime LogFechamodifica { get; set; }
         public short LogEstado { get; set; }
+
+        public virtual Dependencia IddependenciaNavigation { get; set; }
+        public virtual Grupo IdgrupoNavigation { get; set; }
+        public virtual Tipodocumento IdtipodocumentoNavigation { get; set; }
+        public virtual ICollection<Planilladetalle> Planilladetalle { get; set; }
     }
 }
