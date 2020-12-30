@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MSEntidades.Seguridad
+namespace MSEntidades.PlanillaQuinta
 {
-    public class RolDTO : Auditoria
+    public class TipodocumentoDTO: Auditoria
     {
+        public string documento { get; set; }
         public string descripcion { get; set; }
     }
 }

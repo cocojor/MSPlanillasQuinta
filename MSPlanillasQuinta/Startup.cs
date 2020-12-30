@@ -42,7 +42,7 @@ namespace MSPlanillasQuinta
                                                         .SetIsOriginAllowed(_ => true));
             });
 
-            services.AddScoped<IOperacionesRepositorio, OperacionesRepositorio>();
+           services.AddScoped<IOperacionesRepositorio, OperacionesRepositorio>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

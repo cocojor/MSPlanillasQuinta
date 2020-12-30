@@ -7,18 +7,19 @@ namespace MSRepositorioPlanillasQuinta.Modelo
     {
         public Grupo()
         {
-            Trabajador = new HashSet<Trabajador>();
+            Trabajadorgrupo = new HashSet<Trabajadorgrupo>();
         }
 
         public long Idgrupo { get; set; }
-        public string Grupo1 { get; set; }
+        public string Codgrupo { get; set; }
         public string Descripcion { get; set; }
+        public string Tipogrupo { get; set; }
         public string LogUsuariocrea { get; set; }
         public string LogUsuariomodifica { get; set; }
         public DateTime LogFechacrea { get; set; }
         public DateTime LogFechamodifica { get; set; }
         public short LogEstado { get; set; }
 
-        public virtual ICollection<Trabajador> Trabajador { get; set; }
+        public virtual ICollection<Trabajadorgrupo> Trabajadorgrupo { get; set; }
     }
 }

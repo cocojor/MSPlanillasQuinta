@@ -7,11 +7,13 @@ namespace MSRepositorioPlanillasQuinta.Modelo
     {
         public Dependencia()
         {
+            InverseIdparentNavigation = new HashSet<Dependencia>();
             Planillacabecera = new HashSet<Planillacabecera>();
             Trabajador = new HashSet<Trabajador>();
         }
 
         public long Iddependencia { get; set; }
+        public long? Idparent { get; set; }
         public string Codigofacultad { get; set; }
         public string Codigodependencia { get; set; }
         public string Descripcion { get; set; }
@@ -21,6 +23,8 @@ namespace MSRepositorioPlanillasQuinta.Modelo
         public DateTime LogFechamodifica { get; set; }
         public short LogEstado { get; set; }
 
+        public virtual Dependencia IdparentNavigation { get; set; }
+        public virtual ICollection<Dependencia> InverseIdparentNavigation { get; set; }
         public virtual ICollection<Planillacabecera> Planillacabecera { get; set; }
         public virtual ICollection<Trabajador> Trabajador { get; set; }
     }

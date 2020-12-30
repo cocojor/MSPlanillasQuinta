@@ -3,19 +3,22 @@ using System.Collections.Generic;
 
 namespace MSRepositorioPlanillasQuinta.Modelo
 {
-    public partial class Planillas
+    public partial class Tiporetencion
     {
-        public long Idplanilla { get; set; }
-        public long Idusuario { get; set; }
-        public string Descripcionplanilla { get; set; }
-        public string Correlativo { get; set; }
-        public string Tipoplanilla { get; set; }
+        public Tiporetencion()
+        {
+            Retencion = new HashSet<Retencion>();
+        }
+
+        public long Idtiporetencion { get; set; }
+        public string Nombre { get; set; }
+        public string Descripcion { get; set; }
         public string LogUsuariocrea { get; set; }
         public string LogUsuariomodifica { get; set; }
         public DateTime LogFechacrea { get; set; }
         public DateTime LogFechamodifica { get; set; }
         public short LogEstado { get; set; }
 
-        public virtual Usuario IdusuarioNavigation { get; set; }
+        public virtual ICollection<Retencion> Retencion { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace MSEntidades.Seguridad
     {
         public long? idPermiso { get; set; }
         public long? idParent { get; set; }
-        public string icoMenu { get; set; }
+        public string iconMenu { get; set; }
         public string descripcion { get; set; }
         public string ruta { get; set; }
         public string Submenu { get; set; }

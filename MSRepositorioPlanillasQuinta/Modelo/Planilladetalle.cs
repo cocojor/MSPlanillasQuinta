@@ -24,6 +24,7 @@ namespace MSRepositorioPlanillasQuinta.Modelo
         public decimal? Quinta { get; set; }
         public string Banco { get; set; }
         public string Numerocuenta { get; set; }
+        public string Grupo { get; set; }
         public string LogUsuariocrea { get; set; }
         public string LogUsuariomodifica { get; set; }
         public DateTime LogFechacrea { get; set; }

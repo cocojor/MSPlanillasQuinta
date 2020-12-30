@@ -7,12 +7,14 @@ namespace MSRepositorioPlanillasQuinta.Modelo
     {
         public Trabajador()
         {
+            Cuentabancaria = new HashSet<Cuentabancaria>();
             Planilladetalle = new HashSet<Planilladetalle>();
+            Retencion = new HashSet<Retencion>();
+            Trabajadorgrupo = new HashSet<Trabajadorgrupo>();
         }
 
         public long Idtrabajador { get; set; }
         public long Iddependencia { get; set; }
-        public long Idgrupo { get; set; }
         public long Idtipodocumento { get; set; }
         public string Nombre { get; set; }
         public string Apellido { get; set; }
@@ -25,8 +27,10 @@ namespace MSRepositorioPlanillasQuinta.Modelo
         public short LogEstado { get; set; }
 
         public virtual Dependencia IddependenciaNavigation { get; set; }
-        public virtual Grupo IdgrupoNavigation { get; set; }
         public virtual Tipodocumento IdtipodocumentoNavigation { get; set; }
+        public virtual ICollection<Cuentabancaria> Cuentabancaria { get; set; }
         public virtual ICollection<Planilladetalle> Planilladetalle { get; set; }
+        public virtual ICollection<Retencion> Retencion { get; set; }
+        public virtual ICollection<Trabajadorgrupo> Trabajadorgrupo { get; set; }
     }
 }

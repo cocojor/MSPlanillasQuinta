@@ -3,19 +3,19 @@ using System.Collections.Generic;
 
 namespace MSRepositorioPlanillasQuinta.Modelo
 {
-    public partial class Planillas
+    public partial class Cuentabancaria
     {
-        public long Idplanilla { get; set; }
-        public long Idusuario { get; set; }
-        public string Descripcionplanilla { get; set; }
-        public string Correlativo { get; set; }
-        public string Tipoplanilla { get; set; }
+        public long Idcuenta { get; set; }
+        public long Idbanco { get; set; }
+        public long Idtrabajador { get; set; }
+        public string Nrocuenta { get; set; }
         public string LogUsuariocrea { get; set; }
         public string LogUsuariomodifica { get; set; }
         public DateTime LogFechacrea { get; set; }
         public DateTime LogFechamodifica { get; set; }
         public short LogEstado { get; set; }
 
-        public virtual Usuario IdusuarioNavigation { get; set; }
+        public virtual Banco IdbancoNavigation { get; set; }
+        public virtual Trabajador IdtrabajadorNavigation { get; set; }
     }
 }
