@@ -18,7 +18,11 @@ namespace MSRepositorioPlanillasQuinta
         CollectionsResponse<TrabajadorDTO> GetTrabajadores(string filtro, short estado, short pagina, short regxpag);
         Archivo CargarBasePersonal(Archivo archivo, string usuario);
         Archivo CargarDependencias(Archivo archivo, string usuario);
+        Archivo CargarIMP(Archivo archivo, string usuario);
         TrabajadorDTO GetTrabajador(long idTrabajador);
         RespuestaMasivo ProcesarMasivo(Archivo archivo);
+        PlanillaCabeceraDTO GuardarPlanillaQuinta(PlanillaCabeceraDTO planilla, string usuario);
+        List<TopeTrabajadorDTO> ObtenerTopes(long idTrabajador, int anho);
+        List<ExpedienteDTO> ObtenerExpedientes(long idTrabajador, int anho, int mes);
     }
 }

@@ -23,6 +23,7 @@ namespace MSEntidades.PlanillaQuinta
         public decimal judiacial { get; set; }
         public decimal porcentajeQuinta { get; set; }
         public decimal quinta { get; set; }
+        public decimal descuentoAdicional { get; set; }
         public string banco { get; set; }
         public string numeroCuenta { get; set; }
         public TrabajadorDTO trabajador = new TrabajadorDTO();

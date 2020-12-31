@@ -10,6 +10,7 @@ namespace MSRepositorioPlanillasQuinta.Modelo
             Cuentabancaria = new HashSet<Cuentabancaria>();
             Planilladetalle = new HashSet<Planilladetalle>();
             Retencion = new HashSet<Retencion>();
+            Topetrabajador = new HashSet<Topetrabajador>();
             Trabajadorgrupo = new HashSet<Trabajadorgrupo>();
         }
 
@@ -31,6 +32,7 @@ namespace MSRepositorioPlanillasQuinta.Modelo
         public virtual ICollection<Cuentabancaria> Cuentabancaria { get; set; }
         public virtual ICollection<Planilladetalle> Planilladetalle { get; set; }
         public virtual ICollection<Retencion> Retencion { get; set; }
+        public virtual ICollection<Topetrabajador> Topetrabajador { get; set; }
         public virtual ICollection<Trabajadorgrupo> Trabajadorgrupo { get; set; }
     }
 }

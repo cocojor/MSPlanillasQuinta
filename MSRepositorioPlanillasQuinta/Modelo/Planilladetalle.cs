@@ -22,6 +22,7 @@ namespace MSRepositorioPlanillasQuinta.Modelo
         public decimal? Judicial { get; set; }
         public decimal? Porcentajequinta { get; set; }
         public decimal? Quinta { get; set; }
+        public decimal? Descuentoadicional { get; set; }
         public string Banco { get; set; }
         public string Numerocuenta { get; set; }
         public string Grupo { get; set; }

@@ -309,7 +309,7 @@ namespace MSRepositorioPlanillasQuinta
                                                                         .Select(td => new TipodocumentoDTO
                                                                         {
                                                                             id = td.Idtipodocumento,
-                                                                            documento = td.Documento.Trim(),
+                                                                            documento = td.Nombredocumento.Trim(),
                                                                             descripcion = td.Descripcion
                                                                         }).FirstOrDefault(),
                                                         dependencia = ctx.Dependencia.Where(d => d.Iddependencia == t.Iddependencia)
@@ -369,7 +369,7 @@ namespace MSRepositorioPlanillasQuinta
                                                                         .Select(td => new TipodocumentoDTO
                                                                         {
                                                                             id = td.Idtipodocumento,
-                                                                            documento = td.Documento.Trim(),
+                                                                            documento = td.Nombredocumento.Trim(),
                                                                             descripcion = td.Descripcion
                                                                         }).FirstOrDefault(),
                                                         dependencia = ctx.Dependencia.Where(d => d.Iddependencia == t.Iddependencia)
@@ -397,7 +397,7 @@ namespace MSRepositorioPlanillasQuinta
             try
             {
                 TrabajadorDTO trabajador = ctx.Trabajador
-                                                    .Where(t => (t.Documento == documento))
+                                                    .Where(t => (t.Documento.Trim() == documento.Trim()))
                                                     .Select(t => new TrabajadorDTO
                                                     {
                                                         id = t.Idtrabajador,
@@ -424,7 +424,7 @@ namespace MSRepositorioPlanillasQuinta
                                                                         .Select(td => new TipodocumentoDTO
                                                                         {
                                                                             id = td.Idtipodocumento,
-                                                                            documento = td.Documento.Trim(),
+                                                                            documento = td.Nombredocumento.Trim(),
                                                                             descripcion = td.Descripcion
                                                                         }).FirstOrDefault(),
                                                         dependencia = ctx.Dependencia.Where(d => d.Iddependencia == t.Iddependencia)
@@ -827,7 +827,134 @@ namespace MSRepositorioPlanillasQuinta
             }
             return dependencias;
         }
+        public Archivo CargarIMP(Archivo archivo, string usuario)
+        {
+            Directory.CreateDirectory(FILE.RUTA_ARCHIVOS_SERVER);
+            FileStream filePersonaBase = File.Create(FILE.RUTA_ARCHIVOS_SERVER + archivo.Nombre);
+            try
+            {
+                
+                filePersonaBase.Write(Convert.FromBase64String(archivo.Base64));
 
+                using (ExcelPackage excel = new ExcelPackage(filePersonaBase))
+                {
+                    List<TrabajadorDTO> imps = new List<TrabajadorDTO>();
+                    ExcelWorksheet worksheet = excel.Workbook.Worksheets[0];
+                    int rowCount = worksheet.Dimension.Rows;
+                    int colCount = worksheet.Dimension.Columns;
+
+                    
+
+                    for (int row = 1; row <= rowCount; row++)
+                    {
+                        if (row == 1)
+                        {
+                            for (int col = 1; col <= colCount; col++)
+                            {
+                                string clave = worksheet.Cells[row, col].Value != null ? worksheet.Cells[row, col].Value.ToString() : "";
+                                if (cabeceraExcel.ContainsKey(clave))
+                                {
+                                    cabeceraExcel[clave] = col;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            TrabajadorDTO dependencia = new TrabajadorDTO()
+                            {
+                                documento = worksheet.Cells[row, cabeceraExcel["LIBELE"]].Value != null ? worksheet.Cells[row, cabeceraExcel["LIBELE"]].Value.ToString() : "",
+                                nombreApellido = worksheet.Cells[row, cabeceraExcel["APN"]].Value != null ? worksheet.Cells[row, cabeceraExcel["APN"]].Value.ToString() : "",
+                                retenciones = new List<RetencionDTO>()
+                                {
+                                    new RetencionDTO()
+                                    {
+                                        idTipoRetencion = TIPORETENCION.QUINTA,
+                                        porcentaje = worksheet.Cells[row, cabeceraExcel["IMPORTE"]].Value != null ? (decimal)(double)worksheet.Cells[row, cabeceraExcel["IMPORTE"]].Value : 0
+                                    }
+                                },
+                                logUsuariocrea = usuario,
+                                logUsuariomodifica = usuario,
+                                logEstado = ESTADOS.ACTIVO
+                            };
+
+                            imps.Add(dependencia);
+                        }
+                    }
+                    List<TrabajadorDTO> depens = InsertarRetenciones(imps);
+                    filePersonaBase.Close();
+                }
+
+                Directory.Delete(FILE.RUTA_ARCHIVOS_SERVER, true);
+
+                return archivo;
+            }
+            catch (Exception ex)
+            {
+                filePersonaBase.Close();
+                
+                Directory.Delete(FILE.RUTA_ARCHIVOS_SERVER, true);
+                throw ex;
+            }
+        }
+
+        private List<TrabajadorDTO> InsertarRetenciones(List<TrabajadorDTO> imps)
+        {
+            using (var dbcontextTransaction = ctx.Database.BeginTransaction())
+            {
+                int countTemp = 0;
+                try
+                {
+                    foreach (TrabajadorDTO trabajdor in imps)
+                    {
+                        
+                        Trabajador _trabajador = ctx.Trabajador
+                                                    .Where(t => t.Documento == trabajdor.documento)
+                                                    .FirstOrDefault();
+                        if (_trabajador != null)
+                        {
+                            Retencion _quinta = ctx.Retencion
+                                                    .Where(r => r.Idtrabajador == _trabajador.Idtrabajador
+                                                                && r.Idtiporetencion == trabajdor.retenciones[0].idTipoRetencion)
+                                                    .FirstOrDefault();
+                            if( _quinta == null)
+                            {
+                                _quinta = new Retencion()
+                                {
+                                    Idtiporetencion = trabajdor.retenciones[0].idTipoRetencion,
+                                    Idtrabajador = _trabajador.Idtrabajador,
+                                    Porcentaje = trabajdor.retenciones[0].porcentaje,
+                                    LogUsuariocrea = trabajdor.logUsuariocrea,
+                                    LogUsuariomodifica = trabajdor.logUsuariomodifica,
+                                    LogFechacrea = DateTime.Now,
+                                    LogFechamodifica = DateTime.Now,
+                                    LogEstado = trabajdor.logEstado
+                                };
+                                ctx.Retencion.Add(_quinta);
+                                ctx.SaveChanges();
+                            }else
+                            {
+                                _quinta.Porcentaje = trabajdor.retenciones[0].porcentaje;
+                                _quinta.LogUsuariomodifica = trabajdor.logUsuariomodifica;
+                                _quinta.LogFechamodifica = DateTime.Now;
+                                _quinta.LogEstado = trabajdor.logEstado;
+                                ctx.SaveChanges();
+                            }
+                            trabajdor.id = _trabajador.Idtrabajador;
+                        }
+                        countTemp++;
+                    }
+
+                    dbcontextTransaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    dbcontextTransaction.Rollback();
+                    countTemp = 0;
+                    throw ex;
+                }
+            }
+            return imps;
+        }
         #endregion
 
         #region Planillas
@@ -854,9 +981,9 @@ namespace MSRepositorioPlanillasQuinta
                             for (int col = 1; col <= colCount; col++)
                             {
                                 string clave = worksheet.Cells[row, col].Value != null ? worksheet.Cells[row, col].Value.ToString() : "";
-                                if (cabeceraExcel.ContainsKey(clave))
+                                if (detalleExcel.ContainsKey(clave))
                                 {
-                                    cabeceraExcel[clave] = col;
+                                    detalleExcel[clave] = col;
                                 }
                             }
                         }
@@ -870,6 +997,7 @@ namespace MSRepositorioPlanillasQuinta
                                 montoTotal = worksheet.Cells[row, detalleExcel["MontoTotal"]].Value != null ? (decimal)(double)worksheet.Cells[row, detalleExcel["MontoTotal"]].Value : 0,
                                 totalDias = worksheet.Cells[row, detalleExcel["DiasTotal"]].Value != null ? (int)(double)worksheet.Cells[row, detalleExcel["DiasTotal"]].Value : 0,
                                 diasMeses = worksheet.Cells[row, detalleExcel["DiasExp"]].Value != null ? (int)(double)worksheet.Cells[row, detalleExcel["DiasExp"]].Value : 0,
+                                horarios = worksheet.Cells[row, detalleExcel["HORARIOS"]].Value != null ? worksheet.Cells[row, detalleExcel["HORARIOS"]].Value.ToString() : "",
                                 trabajador = new TrabajadorDTO()
                                 {
                                     documento = worksheet.Cells[row, detalleExcel["DNI"]].Value != null ? worksheet.Cells[row, detalleExcel["DNI"]].Value.ToString() : "",
@@ -917,6 +1045,144 @@ namespace MSRepositorioPlanillasQuinta
                     }
                 }
                 return respuesta;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public PlanillaCabeceraDTO GuardarPlanillaQuinta(PlanillaCabeceraDTO planilla, string usuario)
+        {
+            using (var dbcontextTransaction = ctx.Database.BeginTransaction())
+            {
+                try
+                {
+                    Planillacabecera _planillaCabecera = new Planillacabecera()
+                    {
+                        Iddependencia = planilla.idDependencia,
+                        Idestado = planilla.idEstado,
+                        Anhoejecucion = planilla.anhoEjecucion,
+                        Anhodocumento = planilla.anhoDocumento,
+                        Nroexpedinte = planilla.nroExpediente,
+                        Centrocostos = planilla.centroCostos,
+                        Actividadoperativa = planilla.actividadOperativa,
+                        Seccionfuncional = planilla.seccionFuncional,
+                        Planilla = planilla.planilla,
+                        Fechaingreso = planilla.fechaIngreso,
+                        Fechaactualizacion = planilla.fechaActualizacion,
+                        Notatransaccion = planilla.notaTransaccion,
+                        Docuemntoingreso = planilla.docuemntoIngreso,
+                        Folio = planilla.folio,
+                        Asunto = planilla.asunto,
+                        Observacion = planilla.observacion,
+                        Periodoexpedientes = planilla.periodoExpediente,
+                        LogUsuariocrea = usuario,
+                        LogUsuariomodifica = usuario,
+                        LogFechacrea = DateTime.Now,
+                        LogFechamodifica = DateTime.Now,
+                        LogEstado = ESTADOS.ACTIVO
+                    };
+                    ctx.Planillacabecera.Add(_planillaCabecera);
+                    ctx.SaveChanges();
+                    planilla.id = _planillaCabecera.Idplanillacabecera;
+                    foreach (PlanillaDetalleDTO detalle in planilla.detalle)
+                    {
+                        Planilladetalle _detalle = new Planilladetalle()
+                        {
+                            Idtrabajador = detalle.idTrabajador,
+                            Idplanillacabecera = planilla.id,
+                            Anhopago = detalle.anhoPago,
+                            Meses = detalle.meses,
+                            Totaldias = detalle.totalDias,
+                            Montototal = detalle.montoTotal,
+                            Diasmes = detalle.diasMeses,
+                            Dias = detalle.dias,
+                            Horarios = detalle.horarios,
+                            Monto = detalle.monto,
+                            Grupo = detalle.grupo,
+                            LogUsuariocrea = usuario,
+                            LogUsuariomodifica = usuario,
+                            LogFechacrea = DateTime.Now,
+                            LogFechamodifica = DateTime.Now,
+                            LogEstado = ESTADOS.ACTIVO
+                        };
+                        ctx.Planilladetalle.Add(_detalle);
+                        ctx.SaveChanges();
+
+                        detalle.id = _detalle.Idplanilladetalle;
+                    }
+                    dbcontextTransaction.Commit();
+                    return planilla;
+                }
+                catch (Exception ex)
+                {
+                    dbcontextTransaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+
+        public List<TopeTrabajadorDTO> ObtenerTopes(long idTrabajador, int anho)
+        {
+            try
+            {
+                List<TopeTrabajadorDTO> topes = ctx.Topetrabajador
+                                                    .Where(t => t.Idtrabajador == idTrabajador
+                                                                && t.Anho == anho
+                                                                && t.LogEstado == ESTADOS.ACTIVO)
+                                                    .OrderBy(t => t.Mes)
+                                                    .Select(t => new TopeTrabajadorDTO()
+                                                    {
+                                                        id = t.Idtopetrabajador,
+                                                        idTrabajador = t.Idtopetrabajador,
+                                                        anho = t.Anho,
+                                                        mes = t.Mes,
+                                                        montoTope = t.Montotope,
+                                                        logUsuariocrea = t.LogUsuariocrea,
+                                                        logUsuariomodifica = t.LogUsuariomodifica,
+                                                        logFechacrea = t.LogFechacrea,
+                                                        logFechamodifica = t.LogFechamodifica,
+                                                        logEstado = t.LogEstado
+                                                    }).ToList();
+                return topes;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public List<ExpedienteDTO> ObtenerExpedientes(long idTrabajador, int anho, int mes)
+        {
+            try
+            {
+                List<ExpedienteDTO> expedientes = ctx.Planilladetalle
+                                                     .Join(ctx.Planillacabecera,
+                                                            pd => pd.Idplanillacabecera,
+                                                            pc => pc.Idplanillacabecera,
+                                                            (pd,pc) => new { pd, pc})
+                                                     .Join(ctx.Estado,
+                                                            pd => pd.pc.Idestado,
+                                                            e => e.Idestado,
+                                                            (pd,e) => new { pd, e})
+                                                     .Where(pd => pd.pd.pd.Idtrabajador == idTrabajador
+                                                                && pd.pd.pd.Anhopago == anho
+                                                                && pd.pd.pd.Meses == mes
+                                                                && pd.pd.pd.LogEstado == ESTADOS.ACTIVO)
+                                                     .Select(pd => new ExpedienteDTO
+                                                     {
+                                                         documentoIngreso = pd.pd.pc.Docuemntoingreso,
+                                                         nroExpediente = pd.pd.pc.Nroexpedinte,
+                                                         estado = pd.e.Descripcion,
+                                                         mes = pd.pd.pd.Meses,
+                                                         dias = pd.pd.pd.Dias,
+                                                         Horarios = pd.pd.pd.Horarios
+                                                     }).ToList();
+                return expedientes;
+
             }
             catch (Exception ex)
             {

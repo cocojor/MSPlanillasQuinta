@@ -12,7 +12,7 @@ using MSRepositorioPlanillasQuinta;
 namespace MSPlanillasQuinta.Controllers
 {
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/planillas]")]
+    [Route("api/v{version:apiVersion}/planillas")]
     [ApiController]
     public class PlanillasController : ControllerBase
     {
@@ -23,7 +23,7 @@ namespace MSPlanillasQuinta.Controllers
             this.OperacionesRepository = operacionesRepository;
         }
 
-        [HttpPut("masivos")]
+        [HttpPost("masivos")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public ActionResult<RespuestaMasivo> ProcesarMasivo(Archivo archivo)
         {
@@ -33,6 +33,51 @@ namespace MSPlanillasQuinta.Controllers
             }
             catch (Exception ex)
             {
+                throw ex;
+            }
+        }
+
+        [HttpPut("planillasquintas")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
+        public ActionResult<PlanillaCabeceraDTO> GuardarTopes(PlanillaCabeceraDTO planilla, string usuario)
+        {
+            try
+            {
+                return OperacionesRepository.GuardarPlanillaQuinta(planilla, usuario);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        [HttpGet("topes")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public ActionResult<List<TopeTrabajadorDTO>> ObtenerTopes(long idTrabajador, int anho)
+        {
+            try
+            {
+                return OperacionesRepository.ObtenerTopes(idTrabajador, anho);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpGet("expedientes")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public ActionResult<List<ExpedienteDTO>> ObtenerExepedientes(long idTrabajador, int anho, int mes)
+        {
+            try
+            {
+                return OperacionesRepository.ObtenerExpedientes(idTrabajador, anho, mes);
+            }
+            catch (Exception ex)
+            {
+
                 throw ex;
             }
         }

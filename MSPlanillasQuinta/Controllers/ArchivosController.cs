@@ -51,5 +51,19 @@ namespace MSPlanillasQuinta.Controllers
                 throw ex;
             }
         }
+        [HttpPost("imps")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public ActionResult<Archivo> CargarIMP(Archivo archivo, string usuario)
+        {
+            try
+            {
+                return OperacionesRepository.CargarIMP(archivo, usuario);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
     }
 }
